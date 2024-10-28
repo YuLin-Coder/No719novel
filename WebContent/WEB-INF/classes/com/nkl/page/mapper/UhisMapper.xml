@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.nkl.page.dao.IUhisDao">
+
+	<insert id="addUhis" parameterType="Uhis">
+		<![CDATA[
+			insert into uhis
+				values(null,#{user_id},#{info_id},#{uhis_date})
+		]]>
+	</insert>
+
+	<delete id="delUhis" parameterType="int">
+		<![CDATA[
+			delete from uhis where uhis_id=#{uhis_id}
+		]]>
+	</delete>
+
+	<delete id="delUhiss" parameterType="int">
+		<![CDATA[
+			delete from uhis where uhis_id in 
+		]]>
+		<foreach collection="array" item="uhis_ids"  open="(" separator="," close=")">
+			#{uhis_ids}
+		</foreach>
+	</delete>
+
+	<update id="updateUhis" parameterType="Uhis">
+		<![CDATA[
+			UPDATE uhis
+		]]>
+		<set>
+			<if test="uhis_date!=null and uhis_date!=''">
+			<![CDATA[
+				uhis_date = #{uhis_date}
+			]]>
+			</if>
+		</set>
+		<![CDATA[
+			where uhis_id = #{uhis_id}
+		]]>
+	</update>
+
+	<select id="getUhis" parameterType="Uhis" resultType="Uhis">
+		<![CDATA[
+			SELECT c.*,b.tbook_name,s.info_title FROM uhis c join info s on c.info_id=s.info_id join tbook b on s.tbook_id=b.tbook_id
+		]]>
+		<where>
+			<if test="uhis_id!=0">
+			<![CDATA[
+				uhis_id = #{uhis_id}
+			]]>
+			</if>
+			<if test="user_id!=0">
+			<![CDATA[
+				and c.user_id = #{user_id}
+			]]>
+			</if>
+			<if test="info_id!=0">
+			<![CDATA[
+				and c.info_id = #{info_id}
+			]]>
+			</if>
+		</where>
+	</select>
+
+	<select id="listUhiss" parameterType="Uhis" resultType="Uhis">
+		<![CDATA[
+			SELECT * FROM (
+			SELECT c.*,b.tbook_name,s.info_title FROM uhis c join info s on c.info_id=s.info_id join tbook b on s.tbook_id=b.tbook_id
+		]]>
+		<where>
+			<if test="uhis_id!=0">
+			<![CDATA[
+				uhis_id = #{uhis_id}
+			]]>
+			</if>
+			<if test="user_id!=0">
+			<![CDATA[
+				and c.user_id = #{user_id}
+			]]>
+			</if>
+			<if test="info_id!=0">
+			<![CDATA[
+				and c.info_id = #{info_id}
+			]]>
+			</if>
+			<if test="tbook_name!=null and tbook_name!=''">
+			<![CDATA[
+				and b.tbook_name like '%${tbook_name}%'
+			]]>
+			</if>
+			<if test="info_title!=null and info_title!=''">
+			<![CDATA[
+				and s.info_title like '%${info_title}%'
+			]]>
+			</if>
+		</where>
+		<![CDATA[
+			order by uhis_date desc,uhis_id asc) t
+		]]>
+		<if test="start!=-1">
+		<![CDATA[
+			Limit ${start},${limit}
+		]]>
+		</if>
+	</select>
+
+	<select id="listUhissCount" parameterType="Uhis" resultType="int">
+		<![CDATA[
+			SELECT count(*) FROM uhis c join info s on c.info_id=s.info_id join tbook b on s.tbook_id=b.tbook_id
+		]]>
+		<where>
+			<if test="uhis_id!=0">
+			<![CDATA[
+				uhis_id = #{uhis_id}
+			]]>
+			</if>
+			<if test="user_id!=0">
+			<![CDATA[
+				and c.user_id = #{user_id}
+			]]>
+			</if>
+			<if test="info_id!=0">
+			<![CDATA[
+				and c.info_id = #{info_id}
+			]]>
+			</if>
+			<if test="tbook_name!=null and tbook_name!=''">
+			<![CDATA[
+				and b.tbook_name like '%${tbook_name}%'
+			]]>
+			</if>
+			<if test="info_title!=null and info_title!=''">
+			<![CDATA[
+				and s.info_title like '%${info_title}%'
+			]]>
+			</if>
+		</where>
+	</select>
+
+</mapper>

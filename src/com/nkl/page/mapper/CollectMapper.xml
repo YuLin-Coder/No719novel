@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.nkl.page.dao.ICollectDao">
+
+	<insert id="addCollect" parameterType="Collect">
+		<![CDATA[
+			insert into collect
+				values(null,#{user_id},#{bookshelf_id},#{tbook_id},#{collect_date},#{collect_tip})
+		]]>
+	</insert>
+
+	<delete id="delCollect" parameterType="int">
+		<![CDATA[
+			delete from collect where collect_id=#{collect_id}
+		]]>
+	</delete>
+
+	<delete id="delCollects" parameterType="int">
+		<![CDATA[
+			delete from collect where collect_id in 
+		]]>
+		<foreach collection="array" item="collect_ids"  open="(" separator="," close=")">
+			#{collect_ids}
+		</foreach>
+	</delete>
+	
+	<update id="updateCollect" parameterType="Collect">
+		<![CDATA[
+			UPDATE collect
+		]]>
+		<set>
+			<if test="collect_tip!=-1">
+			<![CDATA[
+				collect_tip = #{collect_tip}
+			]]>
+			</if>
+		</set>
+		<![CDATA[
+			where collect_id = #{collect_id}
+		]]>
+	</update>
+
+	<update id="updateCollectTip" parameterType="int">
+		<![CDATA[
+			UPDATE collect SET collect_tip = 1 where tbook_id = #{tbook_id}
+		]]>
+	</update>
+
+	<select id="getCollect" parameterType="Collect" resultType="Collect">
+		<![CDATA[
+			SELECT c.*,b.tbook_name,s.bookshelf_name FROM collect c join tbook b on c.tbook_id=b.tbook_id join bookshelf s on s.bookshelf_id=c.bookshelf_id
+		]]>
+		<where>
+			<if test="collect_id!=0">
+			<![CDATA[
+				collect_id = #{collect_id}
+			]]>
+			</if>
+			<if test="user_id!=0">
+			<![CDATA[
+				and c.user_id = #{user_id}
+			]]>
+			</if>
+			<if test="tbook_id!=0">
+			<![CDATA[
+				and c.tbook_id = #{tbook_id}
+			]]>
+			</if>
+			<if test="bookshelf_id!=0">
+			<![CDATA[
+				and c.bookshelf_id = #{bookshelf_id}
+			]]>
+			</if>
+		</where>
+	</select>
+
+	<select id="listCollects" parameterType="Collect" resultType="Collect">
+		<![CDATA[
+			SELECT * FROM (
+			SELECT c.*,b.tbook_name,s.bookshelf_name FROM collect c join tbook b on c.tbook_id=b.tbook_id join bookshelf s on s.bookshelf_id=c.bookshelf_id
+		]]>
+		<where>
+			<if test="collect_id!=0">
+			<![CDATA[
+				collect_id = #{collect_id}
+			]]>
+			</if>
+			<if test="user_id!=0">
+			<![CDATA[
+				and c.user_id = #{user_id}
+			]]>
+			</if>
+			<if test="tbook_id!=0">
+			<![CDATA[
+				and c.tbook_id = #{tbook_id}
+			]]>
+			</if>
+			<if test="tbook_name!=null and tbook_name!=''">
+			<![CDATA[
+				and b.tbook_name like '%${tbook_name}%'
+			]]>
+			</if>
+			<if test="bookshelf_id!=0">
+			<![CDATA[
+				and c.bookshelf_id = #{bookshelf_id}
+			]]>
+			</if>
+			<if test="bookshelf_name!=null and bookshelf_name!=''">
+			<![CDATA[
+				and s.bookshelf_name like '%${bookshelf_name}%'
+			]]>
+			</if>
+		</where>
+		<![CDATA[
+			order by collect_tip desc,collect_id asc) t
+		]]>
+		<if test="start!=-1">
+		<![CDATA[
+			Limit ${start},${limit}
+		]]>
+		</if>
+	</select>
+
+	<select id="listCollectsCount" parameterType="Collect" resultType="int">
+		<![CDATA[
+			SELECT count(*) FROM collect c join tbook b on c.tbook_id=b.tbook_id join bookshelf s on s.bookshelf_id=c.bookshelf_id
+		]]>
+		<where>
+			<if test="collect_id!=0">
+			<![CDATA[
+				collect_id = #{collect_id}
+			]]>
+			</if>
+			<if test="user_id!=0">
+			<![CDATA[
+				and c.user_id = #{user_id}
+			]]>
+			</if>
+			<if test="tbook_id!=0">
+			<![CDATA[
+				and c.tbook_id = #{tbook_id}
+			]]>
+			</if>
+			<if test="tbook_name!=null and tbook_name!=''">
+			<![CDATA[
+				and b.tbook_name like '%${tbook_name}%'
+			]]>
+			</if>
+			<if test="bookshelf_id!=0">
+			<![CDATA[
+				and c.bookshelf_id = #{bookshelf_id}
+			]]>
+			</if>
+			<if test="bookshelf_name!=null and bookshelf_name!=''">
+			<![CDATA[
+				and s.bookshelf_name like '%${bookshelf_name}%'
+			]]>
+			</if>
+		</where>
+	</select>
+
+</mapper>

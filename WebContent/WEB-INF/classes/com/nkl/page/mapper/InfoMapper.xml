@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.nkl.page.dao.IInfoDao">
+
+	<insert id="addInfo" parameterType="Info">
+		<![CDATA[
+			insert into info
+				values(null,#{tbook_id},#{info_title},#{info_content},#{info_words},#{info_date})
+		]]>
+	</insert>
+
+	<delete id="delInfo" parameterType="int">
+		<![CDATA[
+			delete from info where info_id=#{info_id}
+		]]>
+	</delete>
+
+	<delete id="delInfos" parameterType="int">
+		<![CDATA[
+			delete from info where info_id in 
+		]]>
+		<foreach collection="array" item="info_ids"  open="(" separator="," close=")">
+			#{info_ids}
+		</foreach>
+	</delete>
+
+	<update id="updateInfo" parameterType="Info">
+		<![CDATA[
+			UPDATE info
+		]]>
+		<set>
+			<if test="info_title!=null and info_title!=''">
+			<![CDATA[
+				info_title = #{info_title},
+			]]>
+			</if>
+			<if test="info_content!=null and info_content!=''">
+			<![CDATA[
+				info_content = #{info_content},
+			]]>
+			</if>
+			<if test="info_words!=0">
+			<![CDATA[
+				info_words = #{info_words}
+			]]>
+			</if>
+		</set>
+		<![CDATA[
+			where info_id = #{info_id}
+		]]>
+	</update>
+
+	<select id="getInfo" parameterType="Info" resultType="Info">
+		<![CDATA[
+			SELECT s.*,b.tbook_name From info s join tbook b on s.tbook_id=b.tbook_id
+		]]>
+		<where>
+			<if test="info_id!=0">
+			<![CDATA[
+				s.info_id = #{info_id}
+			]]>
+			</if>
+		</where>
+	</select>
+
+	<select id="listInfos" parameterType="Info" resultType="Info">
+		<![CDATA[
+			SELECT * FROM (
+			SELECT s.*,b.tbook_name From info s join tbook b on s.tbook_id=b.tbook_id
+		]]>
+		<where>
+			<if test="info_id!=0">
+			<![CDATA[
+				s.info_id = #{info_id}
+			]]>
+			</if>
+			<if test="info_title!=null and info_title!=''">
+			<![CDATA[
+				and s.info_title like '%${info_title}%'
+			]]>
+			</if>
+			<if test="tbook_id!=0">
+			<![CDATA[
+				and s.tbook_id = #{tbook_id}
+			]]>
+			</if>
+		</where>
+		<![CDATA[
+			order by s.info_title asc,s.info_id asc) t
+		]]>
+		<if test="start!=-1">
+		<![CDATA[
+			Limit ${start},${limit}
+		]]>
+		</if>
+	</select>
+
+	<select id="listInfosCount" parameterType="Info" resultType="int">
+		<![CDATA[
+			SELECT count(*) From info s join tbook b on s.tbook_id=b.tbook_id
+		]]>
+		<where>
+			<if test="info_id!=0">
+			<![CDATA[
+				s.info_id = #{info_id}
+			]]>
+			</if>
+			<if test="info_title!=null and info_title!=''">
+			<![CDATA[
+				and s.info_title like '%${info_title}%'
+			]]>
+			</if>
+			<if test="tbook_id!=0">
+			<![CDATA[
+				and s.tbook_id = #{tbook_id}
+			]]>
+			</if>
+		</where>
+	</select>
+
+</mapper>

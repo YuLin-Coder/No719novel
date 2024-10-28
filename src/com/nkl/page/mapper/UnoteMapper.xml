@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.nkl.page.dao.IUnoteDao">
+
+	<insert id="addUnote" parameterType="Unote">
+		<![CDATA[
+			insert into unote
+				values(null,#{user_id},#{info_id},#{unote_content},#{unote_date})
+		]]>
+	</insert>
+
+	<delete id="delUnote" parameterType="int">
+		<![CDATA[
+			delete from unote where unote_id=#{unote_id}
+		]]>
+	</delete>
+
+	<delete id="delUnotes" parameterType="int">
+		<![CDATA[
+			delete from unote where unote_id in 
+		]]>
+		<foreach collection="array" item="unote_ids"  open="(" separator="," close=")">
+			#{unote_ids}
+		</foreach>
+	</delete>
+
+	<update id="updateUnote" parameterType="Unote">
+		<![CDATA[
+			UPDATE unote
+		]]>
+		<set>
+			<if test="unote_content!=null and unote_content!=''">
+			<![CDATA[
+				unote_content = #{unote_content},
+			]]>
+			</if>
+			<if test="unote_date!=null and unote_date!=''">
+			<![CDATA[
+				unote_date = #{unote_date}
+			]]>
+			</if>
+		</set>
+		<![CDATA[
+			where unote_id = #{unote_id}
+		]]>
+	</update>
+
+	<select id="getUnote" parameterType="Unote" resultType="Unote">
+		<![CDATA[
+			SELECT c.*,b.tbook_name,s.info_title 
+			  FROM unote c join info s on c.info_id=s.info_id join tbook b on s.tbook_id=b.tbook_id
+		]]>
+		<where>
+			<if test="unote_id!=0">
+			<![CDATA[
+				unote_id = #{unote_id}
+			]]>
+			</if>
+			<if test="user_id!=0">
+			<![CDATA[
+				and c.user_id = #{user_id}
+			]]>
+			</if>
+			<if test="info_id!=0">
+			<![CDATA[
+				and c.info_id = #{info_id}
+			]]>
+			</if>
+		</where>
+	</select>
+
+	<select id="listUnotes" parameterType="Unote" resultType="Unote">
+		<![CDATA[
+			SELECT * FROM (
+			SELECT c.*,b.tbook_name,s.info_title 
+			  FROM unote c join info s on c.info_id=s.info_id join tbook b on s.tbook_id=b.tbook_id
+		]]>
+		<where>
+			<if test="unote_id!=0">
+			<![CDATA[
+				unote_id = #{unote_id}
+			]]>
+			</if>
+			<if test="user_id!=0">
+			<![CDATA[
+				and c.user_id = #{user_id}
+			]]>
+			</if>
+			<if test="info_id!=0">
+			<![CDATA[
+				and c.info_id = #{info_id}
+			]]>
+			</if>
+			<if test="tbook_name!=null and tbook_name!=''">
+			<![CDATA[
+				and b.tbook_name like '%${tbook_name}%'
+			]]>
+			</if>
+			<if test="info_title!=null and info_title!=''">
+			<![CDATA[
+				and s.info_title like '%${info_title}%'
+			]]>
+			</if>
+		</where>
+		<![CDATA[
+			order by unote_date desc,unote_id asc) t
+		]]>
+		<if test="start!=-1">
+		<![CDATA[
+			Limit ${start},${limit}
+		]]>
+		</if>
+	</select>
+
+	<select id="listUnotesCount" parameterType="Unote" resultType="int">
+		<![CDATA[
+			SELECT count(*) 
+			  FROM unote c join info s on c.info_id=s.info_id join tbook b on s.tbook_id=b.tbook_id
+		]]>
+		<where>
+			<if test="unote_id!=0">
+			<![CDATA[
+				unote_id = #{unote_id}
+			]]>
+			</if>
+			<if test="user_id!=0">
+			<![CDATA[
+				and c.user_id = #{user_id}
+			]]>
+			</if>
+			<if test="info_id!=0">
+			<![CDATA[
+				and c.info_id = #{info_id}
+			]]>
+			</if>
+			<if test="tbook_name!=null and tbook_name!=''">
+			<![CDATA[
+				and b.tbook_name like '%${tbook_name}%'
+			]]>
+			</if>
+			<if test="info_title!=null and info_title!=''">
+			<![CDATA[
+				and s.info_title like '%${info_title}%'
+			]]>
+			</if>
+		</where>
+	</select>
+
+</mapper>

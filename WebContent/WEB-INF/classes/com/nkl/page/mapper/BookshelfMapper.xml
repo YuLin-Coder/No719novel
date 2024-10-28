@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.nkl.page.dao.IBookshelfDao">
+
+	<insert id="addBookshelf" parameterType="Bookshelf">
+		<![CDATA[
+			insert into bookshelf
+				values(null,#{user_id},#{bookshelf_name})
+		]]>
+	</insert>
+
+	<delete id="delBookshelf" parameterType="int">
+		<![CDATA[
+			delete from bookshelf where bookshelf_id=#{bookshelf_id}
+		]]>
+	</delete>
+
+	<delete id="delBookshelfs" parameterType="int">
+		<![CDATA[
+			delete from bookshelf where bookshelf_id in 
+		]]>
+		<foreach collection="array" item="bookshelf_ids"  open="(" separator="," close=")">
+			#{bookshelf_ids}
+		</foreach>
+	</delete>
+
+	<update id="updateBookshelf" parameterType="Bookshelf">
+		<![CDATA[
+			UPDATE bookshelf
+		]]>
+		<set>
+			<if test="bookshelf_name!=null and bookshelf_name!=''">
+			<![CDATA[
+				bookshelf_name = #{bookshelf_name}
+			]]>
+			</if>
+		</set>
+		<![CDATA[
+			where bookshelf_id = #{bookshelf_id}
+		]]>
+	</update>
+
+	<select id="getBookshelf" parameterType="Bookshelf" resultType="Bookshelf">
+		<![CDATA[
+			SELECT * FROM bookshelf
+		]]>
+		<where>
+			<if test="bookshelf_id!=0">
+			<![CDATA[
+				bookshelf_id = #{bookshelf_id}
+			]]>
+			</if>
+			<if test="user_id!=0">
+			<![CDATA[
+				and user_id = #{user_id}
+			]]>
+			</if>
+			<if test="bookshelf_name!=null and bookshelf_name!=''">
+			<![CDATA[
+				and bookshelf_name = #{bookshelf_name}
+			]]>
+			</if>
+		</where>
+	</select>
+
+	<select id="listBookshelfs" parameterType="Bookshelf" resultType="Bookshelf">
+		<![CDATA[
+			SELECT * FROM (
+			SELECT * FROM bookshelf
+		]]>
+		<where>
+			<if test="bookshelf_id!=0">
+			<![CDATA[
+				bookshelf_id = #{bookshelf_id}
+			]]>
+			</if>
+			<if test="bookshelf_name!=null and bookshelf_name!=''">
+			<![CDATA[
+				and bookshelf_name like '%${bookshelf_name}%'
+			]]>
+			</if>
+			<if test="user_id!=0">
+			<![CDATA[
+				and user_id = #{user_id}
+			]]>
+			</if>
+		</where>
+		<![CDATA[
+			order by bookshelf_id asc) t
+		]]>
+		<if test="start!=-1">
+		<![CDATA[
+			Limit ${start},${limit}
+		]]>
+		</if>
+	</select>
+
+	<select id="listBookshelfsCount" parameterType="Bookshelf" resultType="int">
+		<![CDATA[
+			SELECT count(*) FROM bookshelf
+		]]>
+		<where>
+			<if test="bookshelf_id!=0">
+			<![CDATA[
+				bookshelf_id = #{bookshelf_id}
+			]]>
+			</if>
+			<if test="bookshelf_name!=null and bookshelf_name!=''">
+			<![CDATA[
+				and bookshelf_name like '%${bookshelf_name}%'
+			]]>
+			</if>
+			<if test="user_id!=0">
+			<![CDATA[
+				and user_id = #{user_id}
+			]]>
+			</if>
+		</where>
+	</select>
+
+</mapper>

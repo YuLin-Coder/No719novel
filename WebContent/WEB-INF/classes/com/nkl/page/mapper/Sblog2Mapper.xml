@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.nkl.page.dao.ISblog2Dao">
+
+	<insert id="addSblog2" parameterType="Sblog2">
+		<![CDATA[
+			insert into sblog2
+				values(null,#{tbook_id},#{user_id},#{nick_name},#{nick_name2},#{sblog_pic},#{sblog_content},#{sblog_date})
+		]]>
+	</insert>
+
+	<delete id="delSblog2" parameterType="int">
+		<![CDATA[
+			delete from sblog2 where sblog_id=#{sblog_id}
+		]]>
+	</delete>
+
+	<delete id="delSblog2s" parameterType="int">
+		<![CDATA[
+			delete from sblog2 where sblog_id in 
+		]]>
+		<foreach collection="array" item="sblog_ids"  open="(" separator="," close=")">
+			#{sblog_ids}
+		</foreach>
+	</delete>
+
+	<update id="updateSblog2" parameterType="Sblog2">
+		<![CDATA[
+			UPDATE sblog2
+		]]>
+		<set>
+			<if test="">
+			<![CDATA[
+				
+			]]>
+			</if>
+		</set>
+		<![CDATA[
+			where sblog_id = #{sblog_id}
+		]]>
+	</update>
+
+	<select id="getSblog2" parameterType="Sblog2" resultType="Sblog2">
+		<![CDATA[
+			SELECT s.*,tb.tbook_name FROM sblog2 s join tbook tb on s.tbook_id=tb.tbook_id
+		]]>
+		<where>
+			<if test="sblog_id!=0">
+			<![CDATA[
+				sblog_id = #{sblog_id}
+			]]>
+			</if>
+		</where>
+	</select>
+
+	<select id="listSblog2s" parameterType="Sblog2" resultType="Sblog2">
+		<![CDATA[
+			SELECT * FROM (
+			SELECT s.*,tb.tbook_name FROM sblog2 s join tbook tb on s.tbook_id=tb.tbook_id
+		]]>
+		<where>
+			<if test="sblog_id!=0">
+			<![CDATA[
+				sblog_id = #{sblog_id}
+			]]>
+			</if>
+			<if test="tbook_id!=0">
+			<![CDATA[
+				and s.tbook_id = #{tbook_id}
+			]]>
+			</if>
+			<if test="tbook_name!=null and tbook_name!=''">
+			<![CDATA[
+				and tb.tbook_name like '%${tbook_name}%'
+			]]>
+			</if>
+			<if test="user_id!=0">
+			<![CDATA[
+				and s.user_id = #{user_id}
+			]]>
+			</if>
+			<if test="nick_name!=null and nick_name!=''">
+			<![CDATA[
+				and s.nick_name like '%${nick_name}%'
+			]]>
+			</if>
+		</where>
+		<![CDATA[
+			order by sblog_date desc,sblog_id asc) t
+		]]>
+		<if test="start!=-1">
+		<![CDATA[
+			Limit ${start},${limit}
+		]]>
+		</if>
+	</select>
+
+	<select id="listSblog2sCount" parameterType="Sblog2" resultType="int">
+		<![CDATA[
+			SELECT count(*) FROM sblog2 s join tbook tb on s.tbook_id=tb.tbook_id
+		]]>
+		<where>
+			<if test="sblog_id!=0">
+			<![CDATA[
+				sblog_id = #{sblog_id}
+			]]>
+			</if>
+			<if test="tbook_id!=0">
+			<![CDATA[
+				and s.tbook_id = #{tbook_id}
+			]]>
+			</if>
+			<if test="tbook_name!=null and tbook_name!=''">
+			<![CDATA[
+				and tb.tbook_name like '%${tbook_name}%'
+			]]>
+			</if>
+			<if test="user_id!=0">
+			<![CDATA[
+				and s.user_id = #{user_id}
+			]]>
+			</if>
+			<if test="nick_name!=null and nick_name!=''">
+			<![CDATA[
+				and s.nick_name like '%${nick_name}%'
+			]]>
+			</if>
+		</where>
+	</select>
+
+</mapper>

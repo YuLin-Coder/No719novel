@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.nkl.page.dao.ITbookDao">
+
+	<insert id="addTbook" parameterType="Tbook">
+		<![CDATA[
+			insert into tbook
+				values(null,#{user_id},#{book_type_id},#{tbook_name},#{tbook_pic},#{tbook_author},#{tbook_desc},#{tbook_date},#{tbook_click},#{tbook_words},#{tbook_flag})
+		]]>
+	</insert>
+
+	<delete id="delTbook" parameterType="int">
+		<![CDATA[
+			delete from tbook where tbook_id=#{tbook_id}
+		]]>
+	</delete>
+
+	<delete id="delTbooks" parameterType="int">
+		<![CDATA[
+			delete from tbook where tbook_id in 
+		]]>
+		<foreach collection="array" item="tbook_ids"  open="(" separator="," close=")">
+			#{tbook_ids}
+		</foreach>
+	</delete>
+
+	<update id="updateTbook" parameterType="Tbook">
+		<![CDATA[
+			UPDATE tbook
+		]]>
+		<set>
+			<if test="book_type_id!=0">
+			<![CDATA[
+				book_type_id = #{book_type_id},
+			]]>
+			</if>
+			<if test="tbook_name!=null and tbook_name!=''">
+			<![CDATA[
+				tbook_name = #{tbook_name},
+			]]>
+			</if>
+			<if test="tbook_pic!=null and tbook_pic!=''">
+			<![CDATA[
+				tbook_pic = #{tbook_pic},
+			]]>
+			</if>
+			<if test="tbook_author!=null and tbook_author!=''">
+			<![CDATA[
+				tbook_author = #{tbook_author},
+			]]>
+			</if>
+			<if test="tbook_isbn!=null and tbook_isbn!=''">
+			<![CDATA[
+				tbook_isbn = #{tbook_isbn},
+			]]>
+			</if>
+			<if test="tbook_words!=0">
+			<![CDATA[
+				tbook_words = #{tbook_words},
+			]]>
+			</if>
+			<if test="tbook_desc!=null and tbook_desc!=''">
+			<![CDATA[
+				tbook_desc = #{tbook_desc},
+			]]>
+			</if>
+			<if test="tbook_flag!=0">
+			<![CDATA[
+				tbook_flag = #{tbook_flag}
+			]]>
+			</if>
+		</set>
+		<![CDATA[
+			where tbook_id = #{tbook_id}
+		]]>
+	</update>
+
+	<update id="updateTbookClick" parameterType="Tbook">
+		<![CDATA[
+			UPDATE tbook
+		]]>
+		<set>
+			<if test="tbook_click!=-1">
+			<![CDATA[
+				tbook_click = #{tbook_click}
+			]]>
+			</if>
+		</set>
+		<![CDATA[
+			where tbook_id = #{tbook_id}
+		]]>
+	</update>
+
+	<select id="getTbook" parameterType="Tbook" resultType="Tbook">
+		<![CDATA[
+			SELECT b.*,bt.book_type_name,u.real_name,IFNULL(e.evaluate_score,0) evaluate_score FROM tbook b 
+			  join user u on b.user_id=u.user_id 
+			  left join book_type bt on b.book_type_id=bt.book_type_id 
+			  left join (select tbook_id,round(evaluate_score,2) evaluate_score from evaluate group by tbook_id) e 
+			    on b.tbook_id=e.tbook_id
+		]]>
+		<where>
+			<if test="tbook_id!=0">
+			<![CDATA[
+				b.tbook_id = #{tbook_id}
+			]]>
+			</if>
+		</where>
+	</select>
+
+	<select id="listTbooks" parameterType="Tbook" resultType="Tbook">
+		<![CDATA[
+			SELECT * FROM (
+			SELECT b.*,bt.book_type_name,u.real_name,IFNULL(e.evaluate_score,0) evaluate_score FROM tbook b 
+			  join user u on b.user_id=u.user_id 
+			  left join book_type bt on b.book_type_id=bt.book_type_id 
+			  left join (select tbook_id,round(evaluate_score,2) evaluate_score from evaluate group by tbook_id) e 
+			    on b.tbook_id=e.tbook_id
+		]]>
+		<where>
+			<if test="tbook_id!=0">
+			<![CDATA[
+				b.tbook_id = #{tbook_id}
+			]]>
+			</if>
+			<if test="tbook_name!=null and tbook_name!=''">
+			<![CDATA[
+				and b.tbook_name like '%${tbook_name}%'
+			]]>
+			</if>
+			<if test="user_id!=0">
+			<![CDATA[
+				and b.user_id = #{user_id}
+			]]>
+			</if>
+			<if test="real_name!=null and real_name!=''">
+			<![CDATA[
+				and u.real_name like '%${real_name}%'
+			]]>
+			</if>
+			<if test="book_type_id!=0">
+			<![CDATA[
+				and b.book_type_id = #{book_type_id}
+			]]>
+			</if>
+			<if test="tbook_flag!=0">
+			<![CDATA[
+				and b.tbook_flag = #{tbook_flag}
+			]]>
+			</if>
+		</where>
+		<if test="top_flag==1">
+			<if test="book_type_id!=0">
+			<![CDATA[
+				order by IFNULL(e.evaluate_score,0) desc, tbook_click desc,b.tbook_id asc) t
+			]]>
+			</if>
+			<if test="book_type_id==0">
+			<![CDATA[
+				order by tbook_click desc,b.tbook_id asc) t
+			]]>
+			</if>
+		</if>
+		<if test="top_flag==0">
+			<if test="book_type_id!=0">
+			<![CDATA[
+				order by IFNULL(e.evaluate_score,0) desc, tbook_date desc,b.tbook_id asc) t
+			]]>
+			</if>
+			<if test="book_type_id==0">
+			<![CDATA[
+				order by tbook_date desc,b.tbook_id asc) t
+			]]>
+			</if>
+		</if>
+		<if test="start!=-1">
+		<![CDATA[
+			Limit ${start},${limit}
+		]]>
+		</if>
+	</select>
+
+	<select id="listTbooksCount" parameterType="Tbook" resultType="int">
+		<![CDATA[
+			SELECT count(*) FROM tbook b 
+			  join user u on b.user_id=u.user_id 
+			  left join book_type bt on b.book_type_id=bt.book_type_id 
+			  left join (select tbook_id,round(evaluate_score,2) evaluate_score from evaluate group by tbook_id) e 
+			    on b.tbook_id=e.tbook_id
+		]]>
+		<where>
+			<if test="tbook_id!=0">
+			<![CDATA[
+				b.tbook_id = #{tbook_id}
+			]]>
+			</if>
+			<if test="tbook_name!=null and tbook_name!=''">
+			<![CDATA[
+				and b.tbook_name like '%${tbook_name}%'
+			]]>
+			</if>
+			<if test="user_id!=0">
+			<![CDATA[
+				and b.user_id = #{user_id}
+			]]>
+			</if>
+			<if test="real_name!=null and real_name!=''">
+			<![CDATA[
+				and u.real_name like '%${real_name}%'
+			]]>
+			</if>
+			<if test="book_type_id!=0">
+			<![CDATA[
+				and b.book_type_id = #{book_type_id}
+			]]>
+			</if>
+			<if test="tbook_flag!=0">
+			<![CDATA[
+				and b.tbook_flag = #{tbook_flag}
+			]]>
+			</if>
+		</where>
+	</select>
+
+</mapper>

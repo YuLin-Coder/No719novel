@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.nkl.page.dao.IEvaluateDao">
+
+	<insert id="addEvaluate" parameterType="Evaluate">
+		<![CDATA[
+			insert into evaluate
+				values(null,#{tbook_id},#{user_id},#{evaluate_score},#{evaluate_date})
+		]]>
+	</insert>
+
+	<delete id="delEvaluate" parameterType="int">
+		<![CDATA[
+			delete from evaluate where evaluate_id=#{evaluate_id}
+		]]>
+	</delete>
+
+	<delete id="delEvaluates" parameterType="int">
+		<![CDATA[
+			delete from evaluate where evaluate_id in 
+		]]>
+		<foreach collection="array" item="evaluate_ids"  open="(" separator="," close=")">
+			#{evaluate_ids}
+		</foreach>
+	</delete>
+
+	<update id="updateEvaluate" parameterType="Evaluate">
+		<![CDATA[
+			UPDATE evaluate
+		]]>
+		<set>
+			<if test="">
+			<![CDATA[
+				
+			]]>
+			</if>
+		</set>
+		<![CDATA[
+			where evaluate_id = #{evaluate_id}
+		]]>
+	</update>
+
+	<select id="getEvaluate" parameterType="Evaluate" resultType="Evaluate">
+		<![CDATA[
+			SELECT * FROM evaluate
+		]]>
+		<where>
+			<if test="evaluate_id!=0">
+			<![CDATA[
+				evaluate_id = #{evaluate_id}
+			]]>
+			</if>
+			<if test="tbook_id!=0">
+			<![CDATA[
+				and tbook_id = #{tbook_id}
+			]]>
+			</if>
+			<if test="user_id!=0">
+			<![CDATA[
+				and user_id = #{user_id}
+			]]>
+			</if>
+		</where>
+	</select>
+
+	<select id="listEvaluates" parameterType="Evaluate" resultType="Evaluate">
+		<![CDATA[
+			SELECT * FROM (
+			SELECT * FROM evaluate
+		]]>
+		<where>
+			<if test="evaluate_id!=0">
+			<![CDATA[
+				evaluate_id = #{evaluate_id}
+			]]>
+			</if>
+			<if test="tbook_id!=0">
+			<![CDATA[
+				and tbook_id = #{tbook_id}
+			]]>
+			</if>
+			<if test="user_id!=0">
+			<![CDATA[
+				and user_id = #{user_id}
+			]]>
+			</if>
+		</where>
+		<![CDATA[
+			order by evaluate_id asc) t
+		]]>
+		<if test="start!=-1">
+		<![CDATA[
+			Limit ${start},${limit}
+		]]>
+		</if>
+	</select>
+
+	<select id="listEvaluatesCount" parameterType="Evaluate" resultType="int">
+		<![CDATA[
+			SELECT count(*) FROM evaluate
+		]]>
+		<where>
+			<if test="evaluate_id!=0">
+			<![CDATA[
+				evaluate_id = #{evaluate_id}
+			]]>
+			</if>
+			<if test="tbook_id!=0">
+			<![CDATA[
+				and tbook_id = #{tbook_id}
+			]]>
+			</if>
+			<if test="user_id!=0">
+			<![CDATA[
+				and user_id = #{user_id}
+			]]>
+			</if>
+		</where>
+	</select>
+
+</mapper>
